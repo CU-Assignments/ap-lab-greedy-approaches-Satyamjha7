@@ -1,0 +1,30 @@
+class Solution {
+public:
+    int maxTaskAssign(vector<int>& tasks, vector<int>& work, int pills, int strength) {
+        int l = 0, r = min(tasks.size(),work.size());
+        int ans = l;
+        sort(tasks.begin(),tasks.end());
+        sort(work.begin(),work.end());
+        while(l <= r){
+            int m = (l+r)/2, curr = pills;
+            multiset<int>mst(end(work)-m,end(work));
+            for(int i=m-1;i>=0;i--){
+                auto end_ptr = prev(end(mst));
+                if(*(end_ptr) < tasks[i]){
+                    end_ptr = mst.lower_bound(tasks[i] - strength);
+                    if(end_ptr == mst.end() || curr <= 0){
+                        break;
+                    }
+                    curr--;
+                }
+                mst.erase(end_ptr);
+            }
+            if(mst.size() == 0){
+                ans = m;
+                l = m + 1;
+            }
+            else r = m - 1;
+        }
+        return ans;
+    }
+};
